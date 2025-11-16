@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title> </title>
+  <title>Mis Enlaces Favoritos</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     html, body {
@@ -12,7 +12,7 @@
       height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
       background-color: #ededed;
-      overflow: hidden; /* evita scroll */
+      overflow: hidden;
     }
     h1 {
       text-align: center;
@@ -21,7 +21,7 @@
     svg {
       display: block;
       width: 100%;
-      height: calc(100% - 50px); /* dejando espacio para el título */
+      height: calc(100% - 50px);
     }
     .linkLine { stroke: #999; stroke-opacity: 0.6; stroke-width: 2px; }
     .nodeText {
@@ -35,10 +35,17 @@
   </style>
 </head>
 <body>
-  <h1>  </h1>
+  <h1>Mis Enlaces Favoritos</h1>
   <svg></svg>
 
   <script>
+    // Definir tamaño de la ventana
+    let width = window.innerWidth;
+    let height = window.innerHeight - 50;
+
+    // --------------------
+    // Nodos y enlaces
+    // --------------------
     const nodes = [
       {id: "youtube", url: "https://www.youtube.com"},
       {id: "substack", url: "https://substack.com/home"},
@@ -55,14 +62,14 @@
       {source: "Are.na", target: "sublime"}
     ];
 
-        // Fijar GIF en el centro
+    // Fijar GIF en el centro
     nodes.forEach(d => {
-      if(d.img) {
+      if(d.img){
         d.fx = width / 2;
         d.fy = height / 2;
       }
     });
-    
+
     const svg = d3.select("svg")
       .attr("width", width)
       .attr("height", height);
@@ -83,7 +90,26 @@
       .selectAll("g")
       .data(nodes)
       .join("g")
-      .call(drag(simulation));
+      .call(d3.drag()
+        .on("start", event => {
+          if (!event.active) simulation.alphaTarget(0.3).restart();
+          event.subject.fx = event.subject.x;
+          event.subject.fy = event.subject.y;
+        })
+        .on("drag", event => {
+          if(!event.subject.img){ // solo nodos de texto se pueden mover
+            event.subject.fx = event.x;
+            event.subject.fy = event.y;
+          }
+        })
+        .on("end", event => {
+          if (!event.active) simulation.alphaTarget(0);
+          if(!event.subject.img){
+            event.subject.fx = null;
+            event.subject.fy = null;
+          }
+        })
+      );
 
     // Dibujar GIF si el nodo tiene imagen
     node.filter(d => d.img)
@@ -113,24 +139,6 @@
       node.attr("transform", d => `translate(${d.x},${d.y})`);
     });
 
-    function drag(sim) {
-      return d3.drag()
-        .on("start", event => {
-          if (!event.active) sim.alphaTarget(0.3).restart();
-          event.subject.fx = event.subject.x;
-          event.subject.fy = event.subject.y;
-        })
-        .on("drag", event => {
-          event.subject.fx = event.x;
-          event.subject.fy = event.y;
-        })
-        .on("end", event => {
-          if (!event.active) sim.alphaTarget(0);
-          event.subject.fx = null;
-          event.subject.fy = null;
-        });
-    }
-
     // Ajustar SVG al cambiar tamaño de ventana
     window.addEventListener("resize", () => {
       width = window.innerWidth;
@@ -138,8 +146,14 @@
       svg.attr("width", width).attr("height", height);
       simulation.force("center", d3.forceCenter(width / 2, height / 2));
       simulation.alpha(0.5).restart();
+      // Mantener GIF centrado
+      nodes.forEach(d => {
+        if(d.img){
+          d.fx = width / 2;
+          d.fy = height / 2;
+        }
+      });
     });
   </script>
 </body>
 </html>
-
