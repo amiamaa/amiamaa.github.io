@@ -30,17 +30,15 @@
       text-decoration: underline;
       fill: #00f;
       text-transform: lowercase;
+      text-anchor: middle;
     }
   </style>
 </head>
 <body>
-  <h1> </h1>
-  <svg width="600" height="400"></svg>
+  <h1>  </h1>
+  <svg></svg>
 
   <script>
-    // --------------------
-    // Nodos y enlaces
-    // --------------------
     const nodes = [
       {id: "youtube", url: "https://www.youtube.com"},
       {id: "substack", url: "https://substack.com/home"},
@@ -55,13 +53,10 @@
       {source: "substack", target: "gárgola"},
       {source: "Are.na", target: "sublime"}
     ];
-    // --------------------
-    // Fin del bloque editable
-    // --------------------
 
-const svg = d3.select("svg");
+    const svg = d3.select("svg");
     let width = window.innerWidth;
-    let height = window.innerHeight - 50; // dejando espacio para el título
+    let height = window.innerHeight - 50;
     svg.attr("width", width).attr("height", height);
 
     const simulation = d3.forceSimulation(nodes)
@@ -75,15 +70,31 @@ const svg = d3.select("svg");
       .join("line")
       .attr("class", "linkLine");
 
+    // Crear nodos generales
     const node = svg.append("g")
-      .selectAll("text")
+      .selectAll("g")
       .data(nodes)
-      .join("text")
-      .attr("class", "nodeText")
-      .text(d => d.id)
-      .on("click", (event, d) => window.open(d.url, "_blank"))
+      .join("g")
       .call(drag(simulation));
 
+    // Dibujar GIF si el nodo tiene imagen
+    node.filter(d => d.img)
+      .append("image")
+      .attr("href", d => d.img)
+      .attr("width", 120)
+      .attr("height", 120)
+      .attr("x", -60)
+      .attr("y", -60);
+
+    // Dibujar texto si el nodo NO tiene imagen
+    node.filter(d => !d.img)
+      .append("text")
+      .attr("class", "nodeText")
+      .attr("dy", 5)
+      .text(d => d.id)
+      .on("click", (event, d) => window.open(d.url, "_blank"));
+
+    // Actualizar posición de nodos en cada tick
     simulation.on("tick", () => {
       link
         .attr("x1", d => d.source.x)
@@ -91,9 +102,7 @@ const svg = d3.select("svg");
         .attr("x2", d => d.target.x)
         .attr("y2", d => d.target.y);
 
-      node
-        .attr("x", d => d.x - 20)
-        .attr("y", d => d.y + 5);
+      node.attr("transform", d => `translate(${d.x},${d.y})`);
     });
 
     function drag(sim) {
@@ -120,7 +129,7 @@ const svg = d3.select("svg");
       height = window.innerHeight - 50;
       svg.attr("width", width).attr("height", height);
       simulation.force("center", d3.forceCenter(width / 2, height / 2));
-      simulation.alpha(0.5).restart(); // reajusta la simulación
+      simulation.alpha(0.5).restart();
     });
   </script>
 </body>
