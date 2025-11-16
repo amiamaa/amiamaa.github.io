@@ -1,51 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="utf-8">
-  <title>Mis Enlaces Favoritos</title>
-
-  <!-- Cargar Mermaid -->
-  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-  <script>
-    mermaid.initialize({ startOnLoad: true, securityLevel: "loose" });
-  </script>
-
+  <meta charset="UTF-8">
+  <title>Mis Enlaces Favoritos Interactivo</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background: #f4f4f4;
-    }
-    h1 {
-      text-align: center;
-    }
-    .box {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 900px;
-      margin: auto;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+    body { font-family: sans-serif; text-align: center; background-color: #f5f5f5; }
+    h1 { margin-top: 20px; color: #333; }
+    svg { border: 1px solid #ccc; margin-top: 20px; background-color: #fff; }
+    .node { stroke: #000; stroke-width: 1.5px; cursor: pointer; }
+    .link { stroke: #999; stroke-opacity: 0.6; stroke-width: 2px; }
+    .label { pointer-events: none; font-size: 12px; font-weight: bold; fill: #fff; }
   </style>
 </head>
-
 <body>
-  <div class="box">
-    <h1>Mis Enlaces Favoritos</h1>
+  <h1>Mis Enlaces Favoritos Interactivo</h1>
+  <svg width="900" height="600"></svg>
 
-    <div class="mermaid">
-      graph TD
-        A[Google] -->|Abrir| G(https://google.com)
-        B[YouTube] -->|Ver videos| YT(https://youtube.com)
-        C[GitHub] -->|Código| GH(https://github.com)
-        D[ChatGPT] -->|Conversar| CG(https://chat.openai.com)
+  <script>
+    // Nodos con colores y enlaces
+    const nodes = [
+      {id: "Google", url: "https://google.com", color: "#4285F4"},
+      {id: "YouTube", url: "https://youtube.com", color: "#FF0000"},
+      {id: "GitHub", url: "https://github.com", color: "#24292e"},
+      {id: "Facebook", url: "https://facebook.com", color: "#1877F2"},
+      {id: "Twitter", url: "https://twitter.com", color: "#1DA1F2"}
+    ];
 
-        %% Conexiones opcionales entre nodos
-        A --> B
-        B --> C
-        C --> D
-    </div>
-  </div>
+    const links = [
+      {source: "Google", target: "YouTube"},
+      {source: "YouTube", target: "GitHub"},
+      {source: "GitHub", target: "Facebook"},
+      {source: "Facebook", target: "Twitter"}
+    ];
+
+    const svg = d3.select("svg");
+    const width = +svg.attr("width");
+    const height = +svg.attr("height");
+
+    const simulation = d3.forceSimulation(nodes)
+      .force("link", d3.forceLink(links).id(d => d.id).distance(180))
+      .force("charge", d3.forceManyBody().strength(-500))
+      .force("center", d3.forceCenter(width / 2, height / 2));
+
+    const link = svg.append("g")
+      .attr("stroke", "#999")
+      .attr("stroke-opacity", 0.6)
+      .selectAll("line")
+      .data(links)
+      .join("line")
+      .attr("class", "link");
+
+    const node = svg.append("g")
+      .selectAll("circle")
+      .data(nodes)
+      .join("circle")
+      .attr("class", "node")
+      .attr("r", 30)
+      .attr("fill", d => d.color)
+      .on("click", d => window.open(d.url, "_blank"))
+      .call(drag(simulation));
+
+    const label = svg.append("g")
+      .selectAll("text")
+      .data(nodes)
+      .join("text")
+      .attr("class", "label")
+      .attr("text-anchor", "middle")
+      .attr("dy", 4)
+      .text(d => d.id);
+
+    simulation.on("tick", () => {
+      link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+
+      node
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+
+      label
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
+    });
+
+    function drag(sim) {
+      return d3.drag()
+        .on("start", event => {
+          if (!event.active) sim.alphaTarget(0.3).restart();
+          event.subject.fx = event.subject.x;
+          event.subject.fy = event.subject.y;
+        })
+        .on("drag", event => {
+          event.subject.fx = event.x;
+          event.subject.fy = event.y;
+        })
+        .on("end", event => {
+          if (!event.active) sim.alphaTarget(0);
+          event.subject.fx = null;
+          event.subject.fy = null;
+        });
+    }
+  </script>
 </body>
 </html>
