@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>diagram</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body {
@@ -23,7 +22,6 @@
   </style>
 </head>
 <body>
-  <h1>diagram</h1>
   <svg width="600" height="400"></svg>
 
   <script>
@@ -33,10 +31,12 @@
     const nodes = [
       {id: "youtube", url: "https://www.youtube.com"},
       {id: "substack", url: "https://substack.com/home"}
+      {id: "gárgola", url: "https://gargoladigital.substack.com"}
     ];
 
     const links = [
       {source: "youtube", target: "substack"}
+      {source: "substack", target: "gárgola"}
     ];
     // --------------------
     // Fin del bloque editable
