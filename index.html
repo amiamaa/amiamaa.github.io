@@ -11,7 +11,7 @@
       width: 100%;
       height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-      background-color: #ededed;
+      background-color: #000000;
       overflow: hidden;
     }
     h1 {
@@ -116,10 +116,10 @@
     node.filter(d => d.img)
       .append("image")
       .attr("href", d => d.img)
-      .attr("width", 120)
-      .attr("height", 120)
-      .attr("x", -60)
-      .attr("y", -60);
+      .attr("width", 240)
+      .attr("height", 240)
+      .attr("x", -120)
+      .attr("y", -120);
 
     // Dibujar texto si el nodo NO tiene imagen
     node.filter(d => !d.img)
