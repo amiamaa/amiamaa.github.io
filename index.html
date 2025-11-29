@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>  </title>
-
+  <title>Mis Enlaces Favoritos</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     html, body {
@@ -12,45 +11,47 @@
       width: 100%;
       height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-      background-color: #000000;
+      background-color: #000000; /* fondo negro */
       overflow: hidden;
     }
     h1 {
       text-align: center;
       margin: 10px 0;
+      color: #ffffff;
     }
     svg {
       display: block;
       width: 100%;
       height: calc(100% - 50px);
     }
-    .linkLine { stroke: #999; stroke-opacity: 0; stroke-width: 2px; }
+    .linkLine {
+      stroke: #999;
+      stroke-opacity: 0; /* líneas invisibles */
+      stroke-width: 2px;
+    }
     .nodeText {
       font-size: 16px;
       cursor: pointer;
       text-decoration: underline;
-      fill: #00f;
+      fill: #ffffff;
       text-transform: lowercase;
       text-anchor: middle;
     }
   </style>
 </head>
 <body>
-  <h1>  </h1>
+  <h1>Mis Enlaces Favoritos</h1>
   <svg></svg>
 
   <script>
-    // Definir tamaño de la ventana
     let width = window.innerWidth;
     let height = window.innerHeight - 50;
 
-    // --------------------
-    // Nodos y enlaces
-    // --------------------
     const nodes = [
       {id: "youtube", url: "https://www.youtube.com"},
       {id: "substack", url: "https://substack.com/home"},
       {id: "radio relativa", url: "https://radiorelativa.eu/resident/canned-can-di-es"},
+      // nodo "música" ahora seguro
       {id: "música", url: "https://example.com"},
       {id: "gárgola", url: "https://gargoladigital.substack.com"},
       {id: "sublime", url: "https://sublime.app/amiama"},
@@ -91,7 +92,6 @@
       .join("line")
       .attr("class", "linkLine");
 
-    // Crear nodos generales
     const node = svg.append("g")
       .selectAll("g")
       .data(nodes)
@@ -103,7 +103,7 @@
           event.subject.fy = event.subject.y;
         })
         .on("drag", event => {
-          if(!event.subject.img){ // solo nodos de texto se pueden mover
+          if(!event.subject.img){ // solo texto se mueve
             event.subject.fx = event.x;
             event.subject.fy = event.y;
           }
@@ -117,7 +117,7 @@
         })
       );
 
-    // Dibujar GIF si el nodo tiene imagen
+    // GIF central
     node.filter(d => d.img)
       .append("image")
       .attr("href", d => d.img)
@@ -126,33 +126,31 @@
       .attr("x", -120)
       .attr("y", -120);
 
-    // Dibujar texto si el nodo NO tiene imagen
+    // Texto clicable
     node.filter(d => !d.img)
       .append("text")
       .attr("class", "nodeText")
       .attr("dy", 5)
       .text(d => d.id)
-      .on("click", (event, d) => window.open(d.url, "_blank"));
+      .on("click", (event, d) => {
+        if(d.url) window.open(d.url, "_blank");
+      });
 
-    // Actualizar posición de nodos en cada tick
     simulation.on("tick", () => {
       link
         .attr("x1", d => d.source.x)
         .attr("y1", d => d.source.y)
         .attr("x2", d => d.target.x)
         .attr("y2", d => d.target.y);
-
       node.attr("transform", d => `translate(${d.x},${d.y})`);
     });
 
-    // Ajustar SVG al cambiar tamaño de ventana
     window.addEventListener("resize", () => {
       width = window.innerWidth;
       height = window.innerHeight - 50;
       svg.attr("width", width).attr("height", height);
       simulation.force("center", d3.forceCenter(width / 2, height / 2));
       simulation.alpha(0.5).restart();
-      // Mantener GIF centrado
       nodes.forEach(d => {
         if(d.img){
           d.fx = width / 2;
