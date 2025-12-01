@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Mis Enlaces Favoritos</title>
+  <title>  </title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     html, body {
@@ -14,89 +14,148 @@
       background-color: #000000;
       overflow: hidden;
     }
-    h1 { text-align: center; margin: 10px 0; color: #fff; }
-    svg { display: block; width: 100%; height: calc(100% - 50px); }
+    h1 {
+      text-align: center;
+      margin: 10px 0;
+    }
+    svg {
+      display: block;
+      width: 100%;
+      height: calc(100% - 50px);
+    }
     .linkLine { stroke: #999; stroke-opacity: 0; stroke-width: 2px; }
-    .nodeText { font-size: 16px; cursor: pointer; text-decoration: underline; fill: #fff; text-transform: lowercase; text-anchor: middle; }
+    .nodeText {
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: underline;
+      fill: #00f;
+      text-transform: lowercase;
+      text-anchor: middle;
+    }
   </style>
 </head>
 <body>
-<h1>Mis Enlaces Favoritos</h1>
-<svg></svg>
+  <h1>  </h1>
+  <svg></svg>
 
-<script>
-let width = window.innerWidth;
-let height = window.innerHeight - 50;
+  <script>
+    // Definir tamaño de la ventana
+    let width = window.innerWidth;
+    let height = window.innerHeight - 50;
 
-const svg = d3.select("svg").attr("width", width).attr("height", height);
+    // --------------------
+    // Nodos y enlaces
+    // --------------------
+    const nodes = [
+      {id: "youtube", url: "https://www.youtube.com"},
+      {id: "substack", url: "https://substack.com/home"},
+      {id: "gárgola", url: "https://gargoladigital.substack.com"},
+      {id: "sublime", url: "https://sublime.app/amiama"},
+      {id: "Are.na", url: "https://www.are.na/laura-amiama/channels"},
+      {id: "gif1", img: "https://raw.githubusercontent.com/amiamaa/amiamaa.github.io/main/original_978baf0a90bc0e475507f2a52b525ed2.gif"}
 
-const nodes = [
-  {id: "youtube", url: "https://www.youtube.com"},
-  {id: "substack", url: "https://substack.com/home"},
-  {id: "radio relativa", url: "https://radiorelativa.eu/resident/canned-can-di-es"},
-  {id: "música", url: "https://example.com"},
-  {id: "gárgola", url: "https://gargoladigital.substack.com"},
-  {id: "sublime", url: "https://sublime.app/amiama"},
-  {id: "Are.na", url: "https://www.are.na/laura-amiama/channels"},
-  {id: "gif1", img: "https://raw.githubusercontent.com/amiamaa/amiamaa.github.io/main/original_978baf0a90bc0e475507f2a52b525ed2.gif"}
-];
+    ];
 
-const links = [
-  {source: "youtube", target: "substack"},
-  {source: "substack", target: "gárgola"},
-  {source: "música", target: "radio relativa"},
-  {source: "gif1", target: "música"},
-  {source: "gif1", target: "substack"},
-  {source: "gif1", target: "sublime"},
-  {source: "Are.na", target: "sublime"}
-];
+    const links = [
+      {source: "youtube", target: "substack"},
+      {source: "substack", target: "gárgola"},
+      {source: "gif1", target: "substack"},
+      {source: "gif1", target: "sublime"},
+      {source: "Are.na", target: "sublime"}
+    ];
 
-const simulation = d3.forceSimulation(nodes)
-  .force("link", d3.forceLink(links).id(d => d.id).distance(200))
-  .force("charge", d3.forceManyBody().strength(-300))
-  .force("center", d3.forceCenter(width / 2, height / 2));
+    // Fijar GIF en el centro
+    nodes.forEach(d => {
+      if(d.img){
+        d.fx = width / 2;
+        d.fy = height / 2;
+      }
+    });
 
-const link = svg.append("g").selectAll("line").data(links).join("line").attr("class","linkLine");
+    const svg = d3.select("svg")
+      .attr("width", width)
+      .attr("height", height);
 
-const node = svg.append("g").selectAll("g").data(nodes).join("g").call(d3.drag()
-  .on("start", event => { if(!event.active) simulation.alphaTarget(0.3).restart(); event.subject.fx = event.subject.x; event.subject.fy = event.subject.y; })
-  .on("drag", event => { if(!event.subject.img){ event.subject.fx = event.x; event.subject.fy = event.y; } })
-  .on("end", event => { if(!event.active) simulation.alphaTarget(0); if(!event.subject.img){ event.subject.fx = null; event.subject.fy = null; } })
-);
+    const simulation = d3.forceSimulation(nodes)
+      .force("link", d3.forceLink(links).id(d => d.id).distance(200))
+      .force("charge", d3.forceManyBody().strength(-300))
+      .force("center", d3.forceCenter(width / 2, height / 2));
 
-// GIF central
-node.filter(d => d.img)
-  .append("image")
-  .attr("href", d => d.img)
-  .attr("width", 240)
-  .attr("height", 240)
-  .attr("x", -120)
-  .attr("y", -120)
-  .each(d => { d.fx = width/2; d.fy = height/2; });
+    const link = svg.append("g")
+      .selectAll("line")
+      .data(links)
+      .join("line")
+      .attr("class", "linkLine");
 
-node.filter(d => !d.img)
-  .append("text")
-  .attr("class", "nodeText")
-  .attr("dy",5)
-  .text(d => d.id)
-  .on("click", (event,d)=>{ if(d.url) window.open(d.url,"_blank"); });
+    // Crear nodos generales
+    const node = svg.append("g")
+      .selectAll("g")
+      .data(nodes)
+      .join("g")
+      .call(d3.drag()
+        .on("start", event => {
+          if (!event.active) simulation.alphaTarget(0.3).restart();
+          event.subject.fx = event.subject.x;
+          event.subject.fy = event.subject.y;
+        })
+        .on("drag", event => {
+          if(!event.subject.img){ // solo nodos de texto se pueden mover
+            event.subject.fx = event.x;
+            event.subject.fy = event.y;
+          }
+        })
+        .on("end", event => {
+          if (!event.active) simulation.alphaTarget(0);
+          if(!event.subject.img){
+            event.subject.fx = null;
+            event.subject.fy = null;
+          }
+        })
+      );
 
-simulation.on("tick", () => {
-  link.attr("x1", d=>d.source.x)
-      .attr("y1", d=>d.source.y)
-      .attr("x2", d=>d.target.x)
-      .attr("y2", d=>d.target.y);
-  node.attr("transform", d=>`translate(${d.x},${d.y})`);
-});
+    // Dibujar GIF si el nodo tiene imagen
+    node.filter(d => d.img)
+      .append("image")
+      .attr("href", d => d.img)
+      .attr("width", 240)
+      .attr("height", 240)
+      .attr("x", -120)
+      .attr("y", -120);
 
-window.addEventListener("resize", () => {
-  width = window.innerWidth;
-  height = window.innerHeight - 50;
-  svg.attr("width",width).attr("height",height);
-  simulation.force("center", d3.forceCenter(width/2,height/2));
-  simulation.alpha(0.5).restart();
-  nodes.forEach(d=>{ if(d.img){ d.fx=width/2; d.fy=height/2; } });
-});
-</script>
+    // Dibujar texto si el nodo NO tiene imagen
+    node.filter(d => !d.img)
+      .append("text")
+      .attr("class", "nodeText")
+      .attr("dy", 5)
+      .text(d => d.id)
+      .on("click", (event, d) => window.open(d.url, "_blank"));
+
+    // Actualizar posición de nodos en cada tick
+    simulation.on("tick", () => {
+      link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+
+      node.attr("transform", d => `translate(${d.x},${d.y})`);
+    });
+
+    // Ajustar SVG al cambiar tamaño de ventana
+    window.addEventListener("resize", () => {
+      width = window.innerWidth;
+      height = window.innerHeight - 50;
+      svg.attr("width", width).attr("height", height);
+      simulation.force("center", d3.forceCenter(width / 2, height / 2));
+      simulation.alpha(0.5).restart();
+      // Mantener GIF centrado
+      nodes.forEach(d => {
+        if(d.img){
+          d.fx = width / 2;
+          d.fy = height / 2;
+        }
+      });
+    });
+  </script>
 </body>
 </html>
