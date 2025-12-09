@@ -36,6 +36,22 @@
 </head>
 <body>
   <h1>  </h1>
+  
+  <!-- Mini Paint embebido en esquina izquierda -->
+  <iframe 
+      src="https://jspaint.app" 
+      width="300" 
+      height="200" 
+      style="
+          position: fixed;
+          left: 10px;
+          top: 10px;
+          border: 2px solid #000; 
+          z-index: 1000;
+      ">
+    Tu navegador no soporta iframes.
+  </iframe>
+
   <svg></svg>
 
   <script>
@@ -53,7 +69,6 @@
       {id: "sublime", url: "https://sublime.app/amiama"},
       {id: "Are.na", url: "https://www.are.na/laura-amiama/channels"},
       {id: "gif1", img: "https://raw.githubusercontent.com/amiamaa/amiamaa.github.io/main/original_978baf0a90bc0e475507f2a52b525ed2.gif"}
-
     ];
 
     const links = [
