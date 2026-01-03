@@ -36,28 +36,6 @@
 </head>
 <body>
   <h1>  </h1>
-  
-  <!-- Mini Paint embebido en esquina izquierda -->
-  <iframe 
-      src="https://jspaint.app" 
-      width="300" 
-      height="400" 
-      style="
-          position: fixed;
-          left: 10px;
-          top: 10px;
-          border: 2px solid #000; 
-          z-index: 1000;
-      ">
-    Tu navegador no soporta iframes.
-  </iframe>
-
-  <svg></svg>
-
-  <script>
-    // Definir tamaño de la ventana
-    let width = window.innerWidth;
-    let height = window.innerHeight - 50;
 
     // --------------------
     // Nodos y enlaces
@@ -65,7 +43,6 @@
     const nodes = [
       {id: "youtube", url: "https://www.youtube.com"},
       {id: "substack", url: "https://substack.com/home"},
-      {id: "gárgola", url: "https://gargoladigital.substack.com"},
       {id: "sublime", url: "https://sublime.app/amiama"},
       {id: "Are.na", url: "https://www.are.na/laura-amiama/channels"},
       {id: "gif1", img: "https://raw.githubusercontent.com/amiamaa/amiamaa.github.io/main/original_978baf0a90bc0e475507f2a52b525ed2.gif"}
@@ -73,7 +50,6 @@
 
     const links = [
       {source: "youtube", target: "substack"},
-      {source: "substack", target: "gárgola"},
       {source: "gif1", target: "substack"},
       {source: "gif1", target: "sublime"},
       {source: "Are.na", target: "sublime"}
