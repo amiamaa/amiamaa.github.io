@@ -4,42 +4,45 @@
   <meta charset="UTF-8">
   <title>journal</title>
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background-color: #000;
-      color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    }
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
 
-    .container {
-      max-width: 800px;
-      margin: 60px auto;
-      padding: 0 20px;
-    }
+  .container {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 0 20px;
+  }
 
-    .entry {
-      margin-bottom: 80px;
-    }
+  .entry {
+    margin-bottom: 80px;
+  }
 
-    .date {
-      font-size: 16px;
-      margin-bottom: 12px;
-      opacity: 0.8;
-    }
+  /* MISMO ESTILO PARA FECHA Y TEXTO */
+  .meta {
+    font-size: 16px;
+    line-height: 1.4;
+    opacity: 0.8;
+    margin-bottom: 20px;
+  }
 
-    .text {
-      font-size: 18px;
-      line-height: 1.5;
-      margin-bottom: 20px;
-    }
+  .images {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-    .images img {
-      width: 100%;
-      margin-bottom: 20px;
-    }
-  </style>
+  .images img {
+    width: 40%;          /* 60% más pequeñas */
+    margin: 0 auto;      /* centradas */
+    display: block;
+  }
+</style>
 </head>
 
 <body>
