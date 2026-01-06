@@ -112,14 +112,14 @@ const node = svg.append("g")
   );
 
 // --------------------
-// Animación de entrada del GIF
+// Animación de entrada del GIF y aparición de nodos
 // --------------------
 let introActive = true;
 const gifNode = node.filter(d => d.img);
 const gifSizeNormal = 240;
-const gifSizeIntro = gifSizeNormal * 1.5;
+const gifSizeIntro = gifSizeNormal * 2; // GIF crece más
 
-// Empezar con GIF invisible y pequeño
+// Empezar con GIF pequeño
 const gifImage = gifNode.append("image")
   .attr("href", d => d.img)
   .attr("width", gifSizeNormal)
@@ -128,8 +128,12 @@ const gifImage = gifNode.append("image")
   .attr("y", -gifSizeNormal/2)
   .attr("transform", "scale(0)");
 
-// Ocultar nodos de texto y enlaces al inicio
-node.filter(d => !d.img).style("opacity", 0);
+// Posición inicial de los nodos de texto: en el centro
+node.filter(d => !d.img)
+  .attr("transform", `translate(${width/2}, ${height/2})`)
+  .style("opacity", 0);
+
+// Ocultar enlaces al inicio
 link.style("opacity", 0);
 
 // Animación de crecimiento del GIF
@@ -149,12 +153,19 @@ d3.select("body").on("click", () => {
     .ease(d3.easeCubicInOut)
     .attr("transform", "scale(1)");
 
-  // Aparecen nodos de texto
+  // Aparecen nodos de texto desde el centro hacia su posición
   node.filter(d => !d.img)
     .transition()
     .delay(600)
     .duration(1200)
-    .style("opacity", 1);
+    .style("opacity", 1)
+    .attrTween("transform", function(d) {
+        const iX = d3.interpolate(width/2, d.x);
+        const iY = d3.interpolate(height/2, d.y);
+        return function(t) {
+            return `translate(${iX(t)},${iY(t)})`;
+        };
+    });
 
   // Aparecen enlaces
   link.transition()
